@@ -93,6 +93,15 @@ void atenderCliente(Caixa caixas[NUM_CAIXAS]) {
 
 void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
     int caixaEscolhido;
+    
+    // Conta quantos caixas estão abertos
+    int caixasAbertos = 0;
+    for (int i = 0; i < NUM_CAIXAS; i++) {
+        if (caixas[i].aberto) {
+            caixasAbertos++;
+        }
+    }
+
     do {
         printf("Informe o número do caixa (1 a %d) para abrir/fechar: ", NUM_CAIXAS);
         scanf("%d", &caixaEscolhido);
@@ -100,6 +109,13 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
     } while (caixaEscolhido < 1 || caixaEscolhido > NUM_CAIXAS);
 
     Caixa *caixa = &caixas[caixaEscolhido - 1];
+    
+    // Verifica se o caixa pode ser fechado
+    if (caixa->aberto && caixasAbertos == 1) {
+        printf("Não é possível fechar o caixa %d, pois pelo menos um caixa deve permanecer aberto.\n", caixaEscolhido);
+        return;
+    }
+
     if (caixa->aberto) {
         printf("Fechando o caixa %d...\n", caixaEscolhido);
         caixa->aberto = false;
@@ -109,7 +125,7 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
         while (clienteAtual != NULL) {
             Cliente *proximoCliente = clienteAtual->proximo;
             printf("Realocando cliente %s para outro caixa aberto.\n", clienteAtual->nome);
-            
+
             // Realoca clientes para o primeiro caixa aberto disponível
             for (int i = 0; i < NUM_CAIXAS; i++) {
                 if (caixas[i].aberto) {
@@ -127,6 +143,7 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
         caixa->aberto = true;
     }
 }
+
 
 void imprimirClientesEmEspera(Caixa caixas[NUM_CAIXAS]) {
     for (int i = 0; i < NUM_CAIXAS; i++) {
