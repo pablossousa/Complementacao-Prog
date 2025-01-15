@@ -3,7 +3,7 @@
 void inicializarCaixas(Caixa caixas[NUM_CAIXAS]) {
     for (int i = 0; i < NUM_CAIXAS; i++) {
         caixas[i].id = i + 1;
-        caixas[i].aberto = true;  // Todos os caixas começam abertos
+        caixas[i].aberto = true; 
         caixas[i].fila = NULL;
     }
 }
@@ -18,18 +18,18 @@ Cliente* criarCliente() {
     printf("Informe o nome do cliente: ");
     fgets(novoCliente->nome, 100, stdin);
     int aux = strlen(novoCliente->nome) - 1;
-    if (novoCliente->nome[aux] == '\n') novoCliente->nome[aux] = '\0';  // Remove o \n do final
+    if (novoCliente->nome[aux] == '\n') novoCliente->nome[aux] = '\0'; 
 
     printf("Informe o CPF do cliente: ");
     fgets(novoCliente->cpf, 12, stdin);
     aux = strlen(novoCliente->cpf) - 1;
-    if (novoCliente->cpf[aux] == '\n') novoCliente->cpf[aux] = '\0';  // Remove o \n do final
+    if (novoCliente->cpf[aux] == '\n') novoCliente->cpf[aux] = '\0';  
 
     printf("Informe a prioridade do cliente (1 = alta, 2 = média, 3 = baixa): ");
     scanf("%d", &novoCliente->prioridade);
     printf("Informe a quantidade de itens do cliente: ");
     scanf("%d", &novoCliente->itens);
-    getchar();  // Limpa o buffer do \n deixado pelo scanf
+    getchar(); 
 
     novoCliente->proximo = NULL;
     return novoCliente;
@@ -41,15 +41,15 @@ void inserirClienteNaFila(Caixa *caixa, Cliente *cliente) {
     } else {
         Cliente *atual = caixa->fila;
         Cliente *anterior = NULL;
-        // Inserir na fila com base na prioridade (ordem crescente)
+       
         while (atual != NULL && atual->prioridade <= cliente->prioridade) {
             anterior = atual;
             atual = atual->proximo;
         }
-        if (anterior == NULL) {  // Inserir no início
+        if (anterior == NULL) { 
             cliente->proximo = caixa->fila;
             caixa->fila = cliente;
-        } else {  // Inserir no meio ou final
+        } else { 
             anterior->proximo = cliente;
             cliente->proximo = atual;
         }
@@ -76,7 +76,7 @@ void atenderCliente(Caixa caixas[NUM_CAIXAS]) {
     do {
         printf("Informe o número do caixa (1 a %d) para atendimento: ", NUM_CAIXAS);
         scanf("%d", &caixaEscolhido);
-        getchar();  // Limpa o buffer
+        getchar(); 
     } while (caixaEscolhido < 1 || caixaEscolhido > NUM_CAIXAS || !caixas[caixaEscolhido - 1].aberto);
 
     Caixa *caixa = &caixas[caixaEscolhido - 1];
@@ -86,15 +86,14 @@ void atenderCliente(Caixa caixas[NUM_CAIXAS]) {
     }
 
     Cliente *clienteAtendido = caixa->fila;
-    caixa->fila = clienteAtendido->proximo;  // Remove o primeiro cliente da fila
+    caixa->fila = clienteAtendido->proximo; 
     printf("Cliente %s com CPF %s foi atendido no caixa %d.\n", clienteAtendido->nome, clienteAtendido->cpf, caixaEscolhido);
     free(clienteAtendido);
 }
 
 void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
     int caixaEscolhido;
-    
-    // Conta quantos caixas estão abertos
+
     int caixasAbertos = 0;
     for (int i = 0; i < NUM_CAIXAS; i++) {
         if (caixas[i].aberto) {
@@ -105,12 +104,11 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
     do {
         printf("Informe o número do caixa (1 a %d) para abrir/fechar: ", NUM_CAIXAS);
         scanf("%d", &caixaEscolhido);
-        getchar();  // Limpa o buffer
+        getchar();  
     } while (caixaEscolhido < 1 || caixaEscolhido > NUM_CAIXAS);
 
     Caixa *caixa = &caixas[caixaEscolhido - 1];
-    
-    // Verifica se o caixa pode ser fechado
+
     if (caixa->aberto && caixasAbertos == 1) {
         printf("Não é possível fechar o caixa %d, pois pelo menos um caixa deve permanecer aberto.\n", caixaEscolhido);
         return;
@@ -120,22 +118,38 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
         printf("Fechando o caixa %d...\n", caixaEscolhido);
         caixa->aberto = false;
 
-        // Realocar clientes
         Cliente *clienteAtual = caixa->fila;
         while (clienteAtual != NULL) {
-            Cliente *proximoCliente = clienteAtual->proximo;
-            printf("Realocando cliente %s para outro caixa aberto.\n", clienteAtual->nome);
+            Cliente *proximoCliente = clienteAtual->proximo;  // Armazena o próximo cliente
 
-            // Realoca clientes para o primeiro caixa aberto disponível
+            int menorFila = -1;
+            int tamanhoMenorFila = INT_MAX;
+
             for (int i = 0; i < NUM_CAIXAS; i++) {
                 if (caixas[i].aberto) {
-                    inserirClienteNaFila(&caixas[i], clienteAtual);
-                    break;
+                    int tamanhoFila = 0;
+                    Cliente *temp = caixas[i].fila;
+                    while (temp != NULL) {
+                        tamanhoFila++;
+                        temp = temp->proximo;
+                    }
+
+                    if (tamanhoFila < tamanhoMenorFila) {
+                        menorFila = i;
+                        tamanhoMenorFila = tamanhoFila;
+                    }
                 }
             }
 
-            clienteAtual = proximoCliente;
+            if (menorFila != -1) {
+                clienteAtual->proximo = NULL;  // Desconecta o cliente da fila original
+                inserirClienteNaFila(&caixas[menorFila], clienteAtual);
+                printf("Realocando cliente %s para o caixa %d.\n", clienteAtual->nome, caixas[menorFila].id);
+            }
+
+            clienteAtual = proximoCliente;  // Move para o próximo cliente
         }
+
         caixa->fila = NULL;  // Limpa a fila do caixa fechado
 
     } else {
@@ -143,6 +157,7 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
         caixa->aberto = true;
     }
 }
+
 
 
 void imprimirClientesEmEspera(Caixa caixas[NUM_CAIXAS]) {
@@ -165,6 +180,6 @@ void imprimirStatusCaixas(Caixa caixas[NUM_CAIXAS]) {
     for (int i = 0; i < NUM_CAIXAS; i++) {
         printf("Caixa %d: %s, Clientes na fila: %d\n", caixas[i].id, 
                caixas[i].aberto ? "Aberto" : "Fechado", 
-               caixas[i].fila == NULL ? 0 : 1);  // Simples contador para verificar se há fila
+               caixas[i].fila == NULL ? 0 : 1);
     }
 }
