@@ -8,16 +8,16 @@ int main() {
 
     while (opcao != 0) {
         system("clear");
-        printf("\n--- Informe a opção que deseja ---\n");
-        printf("0 - Sair do programa\n");
-        printf("1 - Cadastrar um Cliente\n");
-        printf("2 - Atender um Cliente\n");
-        printf("3 - Abrir ou Fechar um Caixa\n");
-        printf("4 - Imprimir a Lista de Clientes em Espera\n");
-        printf("5 - Imprimir o Status dos Caixas\n");
+        printf("\n-------- Informe a opção que deseja --------\n");
+        printf("0- Sair do programa\n");
+        printf("1- Cadastrar um Cliente\n");
+        printf("2- Atender um Cliente\n");
+        printf("3- Abrir ou Fechar um Caixa\n");
+        printf("4- Imprimir a Lista de Clientes em Espera\n");
+        printf("5- Imprimir o Status dos Caixas\n");
         printf("Escolha: ");
         scanf("%d", &opcao);
-        getchar();  // Limpa o buffer do scanf
+        getchar(); 
 
         switch (opcao) {
             case 1:
