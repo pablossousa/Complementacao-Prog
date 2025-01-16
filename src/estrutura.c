@@ -120,7 +120,7 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
 
         Cliente *clienteAtual = caixa->fila;
         while (clienteAtual != NULL) {
-            Cliente *proximoCliente = clienteAtual->proximo;  // Armazena o próximo cliente
+            Cliente *proximoCliente = clienteAtual->proximo;
 
             int menorFila = -1;
             int tamanhoMenorFila = INT_MAX;
@@ -142,15 +142,15 @@ void abrirOuFecharCaixa(Caixa caixas[NUM_CAIXAS]) {
             }
 
             if (menorFila != -1) {
-                clienteAtual->proximo = NULL;  // Desconecta o cliente da fila original
+                clienteAtual->proximo = NULL;
                 inserirClienteNaFila(&caixas[menorFila], clienteAtual);
                 printf("Realocando cliente %s para o caixa %d.\n", clienteAtual->nome, caixas[menorFila].id);
             }
 
-            clienteAtual = proximoCliente;  // Move para o próximo cliente
+            clienteAtual = proximoCliente;
         }
 
-        caixa->fila = NULL;  // Limpa a fila do caixa fechado
+        caixa->fila = NULL;
 
     } else {
         printf("Abrindo o caixa %d...\n", caixaEscolhido);
